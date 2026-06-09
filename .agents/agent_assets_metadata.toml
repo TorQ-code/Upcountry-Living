@@ -1,0 +1,8 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "jabep7iE0CmAh83aji8Pl"
+uri = "file://artifacts/mobile/assets/images/icon.png"
+type = "image"
+title = "upcountry-living-icon"

@@ -1,6 +1,6 @@
-# [Project name]
+# Upcountry Living
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+Inventory management mobile app for an antique/resale shop — lets you capture items with photos, track inventory, view analytics, and research pricing.
 
 ## Run & Operate
 
@@ -19,18 +19,32 @@ _Replace the heading above with the project's name, and this line with one sente
 - Validation: Zod (`zod/v4`), `drizzle-zod`
 - API codegen: Orval (from OpenAPI spec)
 - Build: esbuild (CJS bundle)
+- Mobile: Expo (React Native) with expo-router
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `artifacts/mobile/` — Expo mobile app
+- `artifacts/mobile/context/InventoryContext.tsx` — inventory state, AsyncStorage, CRUD, seed data
+- `artifacts/mobile/constants/colors.ts` — Upcountry Living brand palette (warm earthy tones)
+- `artifacts/mobile/constants/comps.ts` — comp pricing lookup data
+- `artifacts/mobile/app/(tabs)/` — four tab screens: index (Capture), inventory, analytics, pricing
+- `artifacts/mobile/components/` — ItemDetailSheet, PostConfirmSheet
+- `artifacts/api-server/` — Express API server
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- Frontend-only first build: all data stored in AsyncStorage via InventoryContext, no backend DB needed for MVP
+- Four-tab navigation matching the original HTML app: Capture, Inventory, Analytics, Pricing
+- Seed data pre-populated on first launch so the app feels live immediately
+- Warm earthy palette (#735D4D accent) mirroring the original HTML design
+- Comp pricing uses a local lookup table (no external API) with realistic randomized fallback
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+- **Capture**: photograph items, fill form (name/category/condition/price/notes), research comps, save to inventory or post to site
+- **Inventory**: browse/search/filter/sort all items, tap for detail sheet with full CRUD (edit notes, mark sold, list, delete, post)
+- **Analytics**: stats grid, hot/cold item rankings, 6-month revenue vs cost bar chart, profit by category, avg days to sell
+- **Pricing Tool**: search comparable sold prices, see low/mid/high ranges, use price in capture
 
 ## User preferences
 
@@ -38,7 +52,8 @@ _Populate as you build — explicit user instructions worth remembering across s
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
+- makeId() uses `Date.now().toString() + Math.random()...` — do NOT use the 'uuid' package (crashes on iOS)
+- Font family uses Inter (pre-installed) — Poppins/DM Sans from the original HTML were not added to keep bundle lean
 
 ## Pointers
 
