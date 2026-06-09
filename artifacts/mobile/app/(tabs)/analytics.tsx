@@ -1,9 +1,11 @@
 import React, { useMemo } from "react";
 import {
+  Alert,
   Platform,
   ScrollView,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -14,7 +16,22 @@ import { useColors } from "@/hooks/useColors";
 export default function AnalyticsScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
-  const { items } = useInventory();
+  const { items, clearItems } = useInventory();
+
+  const handleClearData = () => {
+    Alert.alert(
+      "Clear All Data",
+      "This will delete all inventory items. Are you sure?",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Clear Everything",
+          style: "destructive",
+          onPress: () => clearItems(),
+        },
+      ]
+    );
+  };
 
   const stats = useMemo(() => {
     const sold = items.filter((i) => i.status === "Sold");
@@ -238,6 +255,17 @@ export default function AnalyticsScreen() {
           </View>
         )}
       </View>
+
+      {/* Clear data */}
+      <TouchableOpacity
+        onPress={handleClearData}
+        style={{ margin: 16, marginTop: 8, padding: 14, borderRadius: 4, borderWidth: 1, borderColor: colors.border, alignItems: "center" }}
+        activeOpacity={0.7}
+      >
+        <Text style={{ fontSize: 13, fontFamily: "Inter_400Regular", color: colors.mutedForeground }}>
+          Clear All Data
+        </Text>
+      </TouchableOpacity>
     </ScrollView>
   );
 }

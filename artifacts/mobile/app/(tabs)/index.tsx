@@ -1,7 +1,7 @@
 import { Feather } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import * as ImagePicker from "expo-image-picker";
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   Alert,
   KeyboardAvoidingView,
@@ -15,6 +15,7 @@ import {
   View,
 } from "react-native";
 import { Image } from "expo-image";
+import { useLocalSearchParams } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import PostConfirmSheet from "@/components/PostConfirmSheet";
@@ -99,8 +100,16 @@ export default function CaptureScreen() {
     suggest: number;
   } | null>(null);
 
+  const { prefillAskPrice } = useLocalSearchParams<{ prefillAskPrice?: string }>();
+  useEffect(() => {
+    if (prefillAskPrice) setAskPrice(prefillAskPrice);
+  }, [prefillAskPrice]);
+
   const [postItem, setPostItem] = useState<InventoryItem | null>(null);
   const [postVisible, setPostVisible] = useState(false);
+
+  const [scanVisible, setScanVisible] = useState(false);
+  const [scanRaw, setScanRaw] = useState("");
 
   const [toast, setToast] = useState<{ msg: string; type: "ok" | "err" } | null>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -139,6 +148,41 @@ export default function CaptureScreen() {
   }, []);
 
   const clearPhoto = useCallback(() => setPhoto(null), []);
+
+  const scanTag = useCallback(async () => {
+    const perm = await ImagePicker.requestCameraPermissionsAsync();
+    let res;
+    if (perm.granted) {
+      res = await ImagePicker.launchCameraAsync({ quality: 0.8, base64: false });
+    } else {
+      const libPerm = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (!libPerm.granted) {
+        Alert.alert("Permission needed", "Please allow camera or photo library access.");
+        return;
+      }
+      res = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ["images"], quality: 0.8, base64: false });
+    }
+    if (!res.canceled && res.assets[0]) {
+      setPhoto(res.assets[0].uri);
+      setScanVisible(true);
+    }
+  }, []);
+
+  const applyScan = useCallback(() => {
+    const raw = scanRaw.trim();
+    if (!raw) { setScanVisible(false); return; }
+    // Parse price: first $X.XX or X.XX pattern
+    const priceMatch = raw.match(/\$?\s*(\d+(?:\.\d{1,2})?)/);
+    if (priceMatch) setPaidPrice(priceMatch[1]);
+    // First non-price line as item name if empty
+    if (!name) {
+      const lines = raw.split(/\n/).map(l => l.trim()).filter(l => l && !/^\$/.test(l));
+      if (lines[0]) setName(lines[0]);
+    }
+    setScanVisible(false);
+    setScanRaw("");
+    showToast("Tag info applied");
+  }, [scanRaw, name, showToast]);
 
   const lookupComps = useCallback(() => {
     const q = (compQ || name).trim();
@@ -248,6 +292,10 @@ export default function CaptureScreen() {
               </Text>
             </TouchableOpacity>
           )}
+          <TouchableOpacity style={[s.scanBtn, { borderColor: colors.accent }]} onPress={scanTag} activeOpacity={0.8}>
+            <Feather name="file-text" size={16} color={colors.accent} />
+            <Text style={[s.scanBtnText, { color: colors.accent }]}>Scan Receipt / Price Tag</Text>
+          </TouchableOpacity>
 
           {/* Form */}
           <View style={[s.card, { marginTop: 12 }]}>
@@ -412,6 +460,45 @@ export default function CaptureScreen() {
           showToast("Queued for shopupcountryliving.com ✓");
         }}
       />
+
+      {/* Scan OCR sheet */}
+      {scanVisible && (
+        <View style={[s.scanOverlay]}>
+          <View style={[s.scanSheet, { backgroundColor: colors.card, borderColor: colors.border }]}>
+            <Text style={[s.scanTitle, { color: colors.text }]}>What's on the tag?</Text>
+            <Text style={[s.scanHint, { color: colors.mutedForeground }]}>
+              Type what you see on the receipt or price tag — item name, price, condition.
+            </Text>
+            <TextInput
+              style={[s.scanInput, { borderColor: colors.borderDk, color: colors.text }]}
+              value={scanRaw}
+              onChangeText={setScanRaw}
+              multiline
+              numberOfLines={4}
+              placeholder={"e.g.\nCast Iron Skillet\n$8.00\nGood condition"}
+              placeholderTextColor={colors.mutedForeground}
+              textAlignVertical="top"
+              autoFocus
+            />
+            <View style={s.scanBtnRow}>
+              <TouchableOpacity
+                style={[s.scanActionBtn, { backgroundColor: colors.accent }]}
+                onPress={applyScan}
+                activeOpacity={0.85}
+              >
+                <Text style={s.scanActionBtnText}>Apply</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[s.scanCancelBtn, { borderColor: colors.borderDk }]}
+                onPress={() => { setScanVisible(false); setScanRaw(""); }}
+                activeOpacity={0.85}
+              >
+                <Text style={[s.scanCancelBtnText, { color: colors.mid }]}>Skip</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      )}
     </View>
   );
 }
@@ -637,5 +724,86 @@ const styles = (c: ReturnType<typeof useColors>) =>
       color: "#fff",
       fontSize: 13,
       fontFamily: "Inter_400Regular",
+    },
+    scanBtn: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: 8,
+      marginTop: 8,
+      paddingVertical: 12,
+      borderRadius: 4,
+      borderWidth: 1,
+      backgroundColor: "transparent",
+    },
+    scanBtnText: {
+      fontSize: 13,
+      fontFamily: "Inter_500Medium",
+      textTransform: "uppercase",
+      letterSpacing: 0.6,
+    },
+    scanOverlay: {
+      position: "absolute",
+      inset: 0,
+      backgroundColor: "rgba(0,0,0,0.45)",
+      justifyContent: "flex-end",
+      zIndex: 200,
+    },
+    scanSheet: {
+      borderTopLeftRadius: 12,
+      borderTopRightRadius: 12,
+      borderWidth: 1,
+      padding: 20,
+      paddingBottom: 36,
+    },
+    scanTitle: {
+      fontSize: 17,
+      fontFamily: "Inter_600SemiBold",
+      marginBottom: 6,
+    },
+    scanHint: {
+      fontSize: 13,
+      fontFamily: "Inter_400Regular",
+      marginBottom: 14,
+      lineHeight: 19,
+    },
+    scanInput: {
+      borderWidth: 1,
+      borderRadius: 4,
+      padding: 12,
+      fontSize: 14,
+      fontFamily: "Inter_400Regular",
+      minHeight: 90,
+      marginBottom: 16,
+    },
+    scanBtnRow: {
+      flexDirection: "row",
+      gap: 10,
+    },
+    scanActionBtn: {
+      flex: 1,
+      paddingVertical: 13,
+      borderRadius: 4,
+      alignItems: "center",
+    },
+    scanActionBtnText: {
+      color: "#fff",
+      fontSize: 13,
+      fontFamily: "Inter_600SemiBold",
+      textTransform: "uppercase",
+      letterSpacing: 0.6,
+    },
+    scanCancelBtn: {
+      flex: 1,
+      paddingVertical: 13,
+      borderRadius: 4,
+      borderWidth: 1,
+      alignItems: "center",
+    },
+    scanCancelBtnText: {
+      fontSize: 13,
+      fontFamily: "Inter_500Medium",
+      textTransform: "uppercase",
+      letterSpacing: 0.6,
     },
   });

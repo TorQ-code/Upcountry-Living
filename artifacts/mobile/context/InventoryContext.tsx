@@ -40,6 +40,7 @@ interface InventoryContextValue {
   updateItem: (id: string, patch: Partial<InventoryItem>) => void;
   deleteItem: (id: string) => void;
   getItem: (id: string) => InventoryItem | undefined;
+  clearItems: () => void;
 }
 
 const InventoryContext = createContext<InventoryContextValue | null>(null);
@@ -284,9 +285,14 @@ export function InventoryProvider({ children }: { children: React.ReactNode }) {
     [items]
   );
 
+  const clearItems = useCallback(() => {
+    setItems([]);
+    AsyncStorage.removeItem(STORAGE_KEY);
+  }, []);
+
   return (
     <InventoryContext.Provider
-      value={{ items, addItem, updateItem, deleteItem, getItem }}
+      value={{ items, addItem, updateItem, deleteItem, getItem, clearItems }}
     >
       {children}
     </InventoryContext.Provider>

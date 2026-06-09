@@ -1,5 +1,5 @@
 import { Feather } from "@expo/vector-icons";
-import React, { useRef, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import {
   KeyboardAvoidingView,
   Platform,
@@ -30,9 +30,14 @@ interface PriceResult {
 export default function PricingScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
+  const router = useRouter();
   const [query, setQuery] = useState("");
   const [result, setResult] = useState<PriceResult | null>(null);
   const inputRef = useRef<TextInput>(null);
+
+  const handleUsePrice = useCallback((mid: number) => {
+    router.push({ pathname: "/(tabs)/", params: { prefillAskPrice: String(mid) } });
+  }, [router]);
 
   const handleSearch = () => {
     const q = query.trim();
@@ -141,9 +146,7 @@ export default function PricingScreen() {
 
               <TouchableOpacity
                 style={[s.useBtn, { backgroundColor: c.accent }]}
-                onPress={() => {
-                  // Navigate to capture tab — user can enter price there
-                }}
+                onPress={() => handleUsePrice(result.mid)}
                 activeOpacity={0.85}
               >
                 <Feather name="arrow-left" size={14} color="#fff" style={{ marginRight: 6 }} />
