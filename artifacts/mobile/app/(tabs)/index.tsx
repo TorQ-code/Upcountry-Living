@@ -320,7 +320,7 @@ export default function CaptureScreen() {
             <Text style={[s.cardLabel, { color: colors.mutedForeground }]}>Comp Research</Text>
             <View style={s.compRow}>
               <TextInput
-                style={[s.input, { flex: 1 }]}
+                style={[s.input, { flex: 1, minWidth: 0 }]}
                 value={compQ}
                 onChangeText={setCompQ}
                 placeholder="Search eBay comps…"
@@ -530,7 +530,7 @@ const styles = (c: ReturnType<typeof useColors>) =>
     compRow: {
       flexDirection: "row",
       gap: 8,
-      alignItems: "center",
+      alignItems: "stretch",
     },
     compResults: {
       marginTop: 10,
@@ -569,11 +569,14 @@ const styles = (c: ReturnType<typeof useColors>) =>
       fontFamily: "Inter_400Regular",
     },
     btnOutline: {
+      flexShrink: 0,
       borderWidth: 1,
       borderColor: c.borderDk,
       borderRadius: 4,
       paddingVertical: 12,
-      paddingHorizontal: 16,
+      paddingHorizontal: 14,
+      alignItems: "center",
+      justifyContent: "center",
     },
     btnOutlineText: {
       fontSize: 13,
