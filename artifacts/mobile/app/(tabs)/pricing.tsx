@@ -61,7 +61,7 @@ export default function PricingScreen() {
 
       <ScrollView
         style={s.scroll}
-        contentContainerStyle={[s.content, { paddingBottom: Platform.OS === "web" ? 34 : insets.bottom + 90 }]}
+        contentContainerStyle={[s.content, { paddingBottom: Platform.OS === "web" ? 100 : insets.bottom + 100 }]}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >

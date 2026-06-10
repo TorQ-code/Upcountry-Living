@@ -230,7 +230,7 @@ export default function InventoryScreen() {
             </View>
           )}
           style={s.list}
-          contentContainerStyle={{ paddingBottom: Platform.OS === "web" ? 34 : insets.bottom + 90 }}
+          contentContainerStyle={{ paddingBottom: Platform.OS === "web" ? 100 : insets.bottom + 100 }}
           scrollEnabled={!!filtered.length}
           showsVerticalScrollIndicator={false}
         />

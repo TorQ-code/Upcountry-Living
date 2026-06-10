@@ -104,7 +104,7 @@ export default function AnalyticsScreen() {
   return (
     <ScrollView
       style={[s.container, { paddingTop: topPad }]}
-      contentContainerStyle={{ paddingBottom: Platform.OS === "web" ? 34 : insets.bottom + 90 }}
+      contentContainerStyle={{ paddingBottom: Platform.OS === "web" ? 100 : insets.bottom + 100 }}
       showsVerticalScrollIndicator={false}
     >
       <View style={[s.pageHead, { borderBottomColor: c.borderDk, backgroundColor: c.headerBg }]}>

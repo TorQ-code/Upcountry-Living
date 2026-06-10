@@ -197,7 +197,7 @@ export default function CaptureScreen() {
 
   const s = styles(colors);
   const topPad = Platform.OS === "web" ? 67 : insets.top;
-  const bottomPad = Platform.OS === "web" ? 34 : 0;
+  const bottomPad = Platform.OS === "web" ? 100 : insets.bottom + 100;
 
   return (
     <View style={[s.container, { paddingTop: topPad }]}>
