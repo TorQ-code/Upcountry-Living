@@ -85,7 +85,7 @@ export default function AnalyticsScreen() {
     sold.forEach((i) => {
       catMap[i.category] = (catMap[i.category] ?? 0) + ((i.salePrice ?? 0) - i.purchasePrice);
     });
-    const maxCat = Math.max(...Object.values(catMap), 1);
+    const maxCat = Math.max(...Object.values(catMap).map(Math.abs), 1);
     const catBars = Object.entries(catMap).sort((a, b) => b[1] - a[1]);
 
     // Days to sell by category
@@ -226,11 +226,19 @@ export default function AnalyticsScreen() {
               <View key={cat}>
                 <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 4 }}>
                   <Text style={[s.catBarLabel, { color: c.mutedForeground }]}>{cat}</Text>
-                  <Text style={[s.catBarLabel, { color: c.mutedForeground }]}>${val.toFixed(0)}</Text>
+                  <Text style={[s.catBarLabel, { color: c.mutedForeground }]}>
+                    {val < 0 ? "-" : ""}${Math.abs(val).toFixed(0)}
+                  </Text>
                 </View>
                 <View style={[s.catTrack, { backgroundColor: c.surface }]}>
                   <View
-                    style={[s.catFill, { width: `${(val / stats.maxCat) * 100}%`, backgroundColor: c.accent }]}
+                    style={[
+                      s.catFill,
+                      {
+                        width: `${(Math.abs(val) / stats.maxCat) * 100}%`,
+                        backgroundColor: val >= 0 ? c.accent : c.destructive,
+                      },
+                    ]}
                   />
                 </View>
               </View>

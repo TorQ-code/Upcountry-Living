@@ -15,10 +15,10 @@ import { useRouter } from "expo-router";
 
 import { fmt$ } from "@/context/InventoryContext";
 import { useColors } from "@/hooks/useColors";
-import { getComps } from "@/constants/comps";
+import { compDates, getComps } from "@/constants/comps";
 
 const PLATS = ["eBay", "eBay", "Etsy", "eBay", "Facebook Mkt"];
-const DATES = ["Jun 1", "May 28", "May 20", "May 14", "May 6"];
+const DATES = compDates();
 
 interface PriceResult {
   comps: { p: number; c: string }[];
@@ -36,7 +36,10 @@ export default function PricingScreen() {
   const inputRef = useRef<TextInput>(null);
 
   const handleUsePrice = useCallback((mid: number) => {
-    router.push({ pathname: "/(tabs)/", params: { prefillAskPrice: String(mid) } });
+    router.push({
+      pathname: "/(tabs)",
+      params: { prefillAskPrice: String(mid), prefillKey: String(Date.now()) },
+    });
   }, [router]);
 
   const handleSearch = () => {

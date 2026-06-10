@@ -2,7 +2,6 @@ import { Feather } from "@expo/vector-icons";
 import React, { useRef, useEffect } from "react";
 import {
   Animated,
-  Image,
   Modal,
   Pressable,
   ScrollView,
@@ -11,6 +10,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { Image } from "expo-image";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useColors } from "@/hooks/useColors";
@@ -47,14 +47,23 @@ export default function PostConfirmSheet({ item, visible, onClose, onConfirm }: 
 
   if (!item) return null;
 
-  const desc = `${item.condition} condition. ${item.notes || ""} A beautiful piece for any home.`.trim();
+  const desc = [
+    `${item.condition} condition.`,
+    item.notes,
+    "A beautiful piece for any home.",
+  ]
+    .filter(Boolean)
+    .join(" ");
   const c = colors;
 
   return (
     <Modal visible={visible} transparent animationType="none" onRequestClose={onClose}>
       <Pressable style={s.overlay} onPress={onClose} />
       <Animated.View
-        style={[s.sheet, { transform: [{ translateY: slideAnim }], paddingBottom: insets.bottom + 16 }]}
+        style={[
+          s.sheet,
+          { backgroundColor: c.card, transform: [{ translateY: slideAnim }], paddingBottom: insets.bottom + 16 },
+        ]}
       >
         <View style={[s.handle, { backgroundColor: c.borderDk }]} />
         <View style={[s.titleRow]}>
@@ -69,7 +78,7 @@ export default function PostConfirmSheet({ item, visible, onClose, onConfirm }: 
           </Text>
           <View style={[s.preview, { backgroundColor: c.surface, borderColor: c.border }]}>
             {item.photo && (
-              <Image source={{ uri: item.photo }} style={s.previewImg} resizeMode="cover" />
+              <Image source={{ uri: item.photo }} style={s.previewImg} contentFit="cover" />
             )}
             <Text style={[s.previewName, { color: c.text }]}>{item.name}</Text>
             <Text style={[s.previewDesc, { color: c.mutedForeground }]}>{desc}</Text>
@@ -99,7 +108,6 @@ export default function PostConfirmSheet({ item, visible, onClose, onConfirm }: 
 const s = StyleSheet.create({
   overlay: { flex: 1, backgroundColor: "rgba(0,0,0,0.45)" },
   sheet: {
-    backgroundColor: "#ffffff",
     borderTopLeftRadius: 14,
     borderTopRightRadius: 14,
     maxHeight: "80%",

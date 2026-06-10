@@ -30,9 +30,9 @@ import {
   useInventory,
 } from "@/context/InventoryContext";
 import { useColors } from "@/hooks/useColors";
-import { getComps } from "@/constants/comps";
+import { compDates, getComps } from "@/constants/comps";
 
-const COMP_DATES = ["May 28", "May 20", "May 12", "Apr 30", "Apr 18"];
+const COMP_DATES = compDates();
 
 function SegmentPicker<T extends string>({
   options,
@@ -83,7 +83,7 @@ function SegmentPicker<T extends string>({
 export default function CaptureScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
-  const { addItem } = useInventory();
+  const { addItem, updateItem } = useInventory();
 
   const [photo, setPhoto] = useState<string | null>(null);
   const [name, setName] = useState("");
@@ -100,10 +100,15 @@ export default function CaptureScreen() {
     suggest: number;
   } | null>(null);
 
-  const { prefillAskPrice } = useLocalSearchParams<{ prefillAskPrice?: string }>();
+  // prefillKey changes on every "Use price" tap so the same price can be
+  // applied more than once.
+  const { prefillAskPrice, prefillKey } = useLocalSearchParams<{
+    prefillAskPrice?: string;
+    prefillKey?: string;
+  }>();
   useEffect(() => {
     if (prefillAskPrice) setAskPrice(prefillAskPrice);
-  }, [prefillAskPrice]);
+  }, [prefillAskPrice, prefillKey]);
 
   const [postItem, setPostItem] = useState<InventoryItem | null>(null);
   const [postVisible, setPostVisible] = useState(false);
@@ -118,6 +123,12 @@ export default function CaptureScreen() {
     setToast({ msg, type });
     if (toastTimer.current) clearTimeout(toastTimer.current);
     toastTimer.current = setTimeout(() => setToast(null), 3000);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (toastTimer.current) clearTimeout(toastTimer.current);
+    };
   }, []);
 
   const pickPhoto = useCallback(async () => {
@@ -171,12 +182,18 @@ export default function CaptureScreen() {
   const applyScan = useCallback(() => {
     const raw = scanRaw.trim();
     if (!raw) { setScanVisible(false); return; }
-    // Parse price: first $X.XX or X.XX pattern
-    const priceMatch = raw.match(/\$?\s*(\d+(?:\.\d{1,2})?)/);
+    // Parse price: prefer a $-prefixed amount, then a line that is only a
+    // number — never a number embedded in the item name (e.g. 'Skillet 10"').
+    const priceMatch =
+      raw.match(/\$\s*(\d+(?:\.\d{1,2})?)/) ||
+      raw.match(/(?:^|\n)\s*(\d+(?:\.\d{1,2})?)\s*(?:\n|$)/);
     if (priceMatch) setPaidPrice(priceMatch[1]);
     // First non-price line as item name if empty
     if (!name) {
-      const lines = raw.split(/\n/).map(l => l.trim()).filter(l => l && !/^\$/.test(l));
+      const lines = raw
+        .split(/\n/)
+        .map((l) => l.trim())
+        .filter((l) => l && !/^\$?\s*\d+(?:\.\d{1,2})?$/.test(l));
       if (lines[0]) setName(lines[0]);
     }
     setScanVisible(false);
@@ -456,6 +473,9 @@ export default function CaptureScreen() {
         visible={postVisible}
         onClose={() => setPostVisible(false)}
         onConfirm={() => {
+          if (postItem && postItem.status !== "Sold") {
+            updateItem(postItem.id, { status: "Listed" });
+          }
           setPostVisible(false);
           showToast("Queued for shopupcountryliving.com ✓");
         }}

@@ -72,13 +72,23 @@ export const COMPS: Record<string, { p: number; c: string }[]> = {
 };
 
 export function getComps(q: string): { p: number; c: string }[] {
-  const lower = q.toLowerCase();
+  const lower = q.toLowerCase().trim();
+  const firstWord = lower.split(/\s+/)[0] ?? "";
   for (const [key, val] of Object.entries(COMPS)) {
-    if (lower.includes(key) || key.includes(lower.split(" ")[0] ?? "")) {
+    // Match when the query contains the key phrase, or the query's first
+    // word equals a whole word of the key (no substring matches, so "wat"
+    // does not match "watering").
+    if (lower.includes(key) || key.split(" ").includes(firstWord)) {
       return val;
     }
   }
-  const b = 18 + Math.floor(Math.random() * 35);
+  // Deterministic fallback: hash the query so the same search always
+  // returns the same prices.
+  let h = 0;
+  for (let i = 0; i < lower.length; i++) {
+    h = (h * 31 + lower.charCodeAt(i)) >>> 0;
+  }
+  const b = 18 + (h % 35);
   return [
     { p: b, c: "Good" },
     { p: b + 14, c: "Excellent" },
@@ -86,4 +96,13 @@ export function getComps(q: string): { p: number; c: string }[] {
     { p: b + 4, c: "Good" },
     { p: b + 8, c: "Good" },
   ];
+}
+
+export function compDates(count = 5): string[] {
+  const offsets = [8, 16, 24, 38, 50];
+  return Array.from({ length: count }, (_, i) => {
+    const d = new Date();
+    d.setDate(d.getDate() - (offsets[i] ?? 8 + i * 12));
+    return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  });
 }

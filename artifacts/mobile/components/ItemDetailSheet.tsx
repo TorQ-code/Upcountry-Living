@@ -4,7 +4,6 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   Alert,
   Animated,
-  Image,
   KeyboardAvoidingView,
   Modal,
   Platform,
@@ -16,6 +15,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { Image } from "expo-image";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useColors } from "@/hooks/useColors";
@@ -98,22 +98,24 @@ export default function ItemDetailSheet({ item, visible, onClose, onPostToSite }
       return;
     }
     if (!item) return;
+    // Include notes so in-progress edits aren't lost when the sheet closes.
     updateItem(item.id, {
       status: "Sold",
       salePrice: p,
       dateSold: new Date().toISOString(),
+      notes,
     });
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     onClose();
-  }, [salePrice, item, updateItem, onClose]);
+  }, [salePrice, item, notes, updateItem, onClose]);
 
   const handleToggleListed = useCallback(() => {
     if (!item) return;
     const next = item.status === "Listed" ? "In Stock" : "Listed";
-    updateItem(item.id, { status: next });
+    updateItem(item.id, { status: next, notes });
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     onClose();
-  }, [item, updateItem, onClose]);
+  }, [item, notes, updateItem, onClose]);
 
   const handleSaveNotes = useCallback(() => {
     if (!item) return;
@@ -182,7 +184,7 @@ export default function ItemDetailSheet({ item, visible, onClose, onPostToSite }
         <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={{ flex: 1 }}>
           <ScrollView style={s.body} showsVerticalScrollIndicator={false}>
             {item.photo && (
-              <Image source={{ uri: item.photo }} style={s.photo} resizeMode="cover" />
+              <Image source={{ uri: item.photo }} style={s.photo} contentFit="cover" />
             )}
 
             <View style={s.grid}>

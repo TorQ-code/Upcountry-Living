@@ -53,6 +53,7 @@ _Populate as you build — explicit user instructions worth remembering across s
 ## Gotchas
 
 - makeId() uses `Date.now().toString() + Math.random()...` — do NOT use the 'uuid' package (crashes on iOS)
+- The `@types/react` / `@types/react-dom` catalog entries must stay on ~19.1.x to match the expo pin in artifacts/mobile — two copies of the react types in the store break typechecking in mockup-sandbox deps (react-day-picker, lucide-react)
 - Font family uses Inter (pre-installed) — Poppins/DM Sans from the original HTML were not added to keep bundle lean
 
 ## Pointers

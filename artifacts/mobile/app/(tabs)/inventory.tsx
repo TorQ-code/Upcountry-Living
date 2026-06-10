@@ -94,7 +94,7 @@ const rs = StyleSheet.create({
 export default function InventoryScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
-  const { items } = useInventory();
+  const { items, updateItem } = useInventory();
 
   const [search, setSearch] = useState("");
   const [catFilter, setCatFilter] = useState<ItemCategory | "">("");
@@ -246,7 +246,12 @@ export default function InventoryScreen() {
         item={postItem}
         visible={postVisible}
         onClose={() => setPostVisible(false)}
-        onConfirm={() => setPostVisible(false)}
+        onConfirm={() => {
+          if (postItem && postItem.status !== "Sold") {
+            updateItem(postItem.id, { status: "Listed" });
+          }
+          setPostVisible(false);
+        }}
       />
     </View>
   );

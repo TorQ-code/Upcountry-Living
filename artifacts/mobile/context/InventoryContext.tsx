@@ -47,6 +47,12 @@ const InventoryContext = createContext<InventoryContextValue | null>(null);
 
 const STORAGE_KEY = "ucl_inventory_v2";
 
+function save(next: InventoryItem[]) {
+  AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(next)).catch((e) =>
+    console.warn("Failed to save inventory", e)
+  );
+}
+
 function ago(n: number): string {
   const d = new Date();
   d.setDate(d.getDate() - n);
@@ -228,57 +234,59 @@ export function InventoryProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<InventoryItem[]>([]);
 
   useEffect(() => {
-    AsyncStorage.getItem(STORAGE_KEY).then((raw) => {
-      if (raw) {
-        try {
-          setItems(JSON.parse(raw));
-        } catch {
-          setItems(SEED);
+    AsyncStorage.getItem(STORAGE_KEY)
+      .then((raw) => {
+        let stored: InventoryItem[] | null = null;
+        if (raw != null) {
+          try {
+            const parsed = JSON.parse(raw);
+            if (Array.isArray(parsed)) stored = parsed;
+          } catch {
+            stored = null;
+          }
         }
-      } else {
-        setItems(SEED);
-        AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(SEED));
-      }
+        const base = stored ?? SEED;
+        setItems((prev) => {
+          if (prev.length === 0) {
+            if (stored === null) save(base);
+            return base;
+          }
+          // Items were added before the stored inventory finished loading; keep both.
+          const ids = new Set(prev.map((i) => i.id));
+          const merged = [...prev, ...base.filter((i) => !ids.has(i.id))];
+          save(merged);
+          return merged;
+        });
+      })
+      .catch((e) => console.warn("Failed to load inventory", e));
+  }, []);
+
+  const addItem = useCallback((item: InventoryItem) => {
+    setItems((prev) => {
+      const next = [item, ...prev];
+      save(next);
+      return next;
     });
   }, []);
-
-  const persist = useCallback((next: InventoryItem[]) => {
-    setItems(next);
-    AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-  }, []);
-
-  const addItem = useCallback(
-    (item: InventoryItem) => {
-      setItems((prev) => {
-        const next = [item, ...prev];
-        AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-        return next;
-      });
-    },
-    []
-  );
 
   const updateItem = useCallback(
     (id: string, patch: Partial<InventoryItem>) => {
       setItems((prev) => {
         const next = prev.map((i) => (i.id === id ? { ...i, ...patch } : i));
-        AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+        save(next);
         return next;
       });
     },
     []
   );
 
-  const deleteItem = useCallback(
-    (id: string) => {
-      setItems((prev) => {
-        const next = prev.filter((i) => i.id !== id);
-        AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-        return next;
-      });
-    },
-    []
-  );
+  const deleteItem = useCallback((id: string) => {
+    setItems((prev) => {
+      const next = prev.filter((i) => i.id !== id);
+      save(next);
+      return next;
+    });
+  }, []);
 
   const getItem = useCallback(
     (id: string) => items.find((i) => i.id === id),
@@ -287,7 +295,9 @@ export function InventoryProvider({ children }: { children: React.ReactNode }) {
 
   const clearItems = useCallback(() => {
     setItems([]);
-    AsyncStorage.removeItem(STORAGE_KEY);
+    // Persist an empty list (instead of removing the key) so the seed data
+    // is not restored on the next launch.
+    save([]);
   }, []);
 
   return (
@@ -306,7 +316,7 @@ export function useInventory() {
 }
 
 export function makeId(): string {
-  return Date.now().toString() + Math.random().toString(36).substr(2, 9);
+  return Date.now().toString() + Math.random().toString(36).slice(2, 11);
 }
 
 export function fmt$(n: number | null): string {
