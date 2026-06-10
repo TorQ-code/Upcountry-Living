@@ -190,9 +190,10 @@ const styles = (c: ReturnType<typeof useColors>) =>
       borderRadius: 4,
       padding: 14,
     },
-    searchRow: { flexDirection: "row", gap: 8, marginBottom: 16 },
+    searchRow: { flexDirection: "row", gap: 8, marginBottom: 16, alignItems: "center" },
     searchInput: {
       flex: 1,
+      minWidth: 0,
       borderWidth: 1,
       borderColor: c.borderDk,
       borderRadius: 4,
@@ -205,11 +206,12 @@ const styles = (c: ReturnType<typeof useColors>) =>
     searchBtn: {
       flexDirection: "row",
       alignItems: "center",
+      flexShrink: 0,
       backgroundColor: c.accent,
       borderRadius: 4,
-      paddingHorizontal: 16,
+      paddingHorizontal: 14,
       paddingVertical: 12,
-      gap: 6,
+      gap: 5,
     },
     searchBtnText: {
       color: "#fff",
