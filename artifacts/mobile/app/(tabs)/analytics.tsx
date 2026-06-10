@@ -107,7 +107,7 @@ export default function AnalyticsScreen() {
       contentContainerStyle={{ paddingBottom: Platform.OS === "web" ? 34 : insets.bottom + 90 }}
       showsVerticalScrollIndicator={false}
     >
-      <View style={s.pageHead}>
+      <View style={[s.pageHead, { borderBottomColor: c.borderDk, backgroundColor: c.headerBg }]}>
         <Text style={[s.pageTitle, { color: c.text }]}>Analytics</Text>
         <Text style={[s.pageSub, { color: c.mutedForeground }]}>
           If you're not tracking it, you're not growing it.
@@ -245,9 +245,9 @@ export default function AnalyticsScreen() {
 const styles = (c: ReturnType<typeof useColors>) =>
   StyleSheet.create({
     container: { flex: 1, backgroundColor: c.background },
-    pageHead: { padding: 16, paddingBottom: 8 },
-    pageTitle: { fontSize: 22, fontWeight: "600", fontFamily: "Inter_600SemiBold" },
-    pageSub: { fontSize: 13, marginTop: 2, fontFamily: "Inter_400Regular" },
+    pageHead: { padding: 16, paddingBottom: 12, borderBottomWidth: 1, marginBottom: 4 },
+    pageTitle: { fontSize: 14, fontWeight: "600", fontFamily: "Inter_600SemiBold", letterSpacing: 2, textTransform: "uppercase" },
+    pageSub: { fontSize: 12, marginTop: 3, fontFamily: "Inter_400Regular", fontStyle: "italic" },
     statsGrid: {
       flexDirection: "row",
       flexWrap: "wrap",
@@ -278,7 +278,8 @@ const styles = (c: ReturnType<typeof useColors>) =>
       fontSize: 10,
       textTransform: "uppercase",
       letterSpacing: 0.9,
-      fontFamily: "Inter_500Medium",
+      fontFamily: "Inter_600SemiBold",
+      color: c.accent,
       marginBottom: 10,
     },
     emptyMsg: { fontSize: 13, fontFamily: "Inter_400Regular" },

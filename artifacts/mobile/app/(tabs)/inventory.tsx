@@ -165,7 +165,7 @@ export default function InventoryScreen() {
               return (
                 <TouchableOpacity
                   onPress={() => setCatFilter(cat)}
-                  style={[s.pill, { backgroundColor: active ? c.text : c.card, borderColor: active ? c.text : c.borderDk }]}
+                  style={[s.pill, { backgroundColor: active ? c.accent : c.card, borderColor: active ? c.accent : c.borderDk }]}
                 >
                   <Text style={[s.pillText, { color: active ? "#fff" : c.mid }]}>{cat || "All"}</Text>
                 </TouchableOpacity>
@@ -180,7 +180,7 @@ export default function InventoryScreen() {
                 <TouchableOpacity
                   key={st}
                   onPress={() => setStatusFilter(st)}
-                  style={[s.pill, { backgroundColor: active ? c.text : c.card, borderColor: active ? c.text : c.borderDk }]}
+                  style={[s.pill, { backgroundColor: active ? c.accent : c.card, borderColor: active ? c.accent : c.borderDk }]}
                 >
                   <Text style={[s.pillText, { color: active ? "#fff" : c.mid }]}>{st || "All"}</Text>
                 </TouchableOpacity>
@@ -262,13 +262,15 @@ const styles = (c: ReturnType<typeof useColors>) =>
       justifyContent: "space-between",
       paddingHorizontal: 16,
       borderBottomWidth: 1,
-      borderBottomColor: c.border,
-      backgroundColor: c.card,
+      borderBottomColor: c.borderDk,
+      backgroundColor: c.headerBg,
     },
     headerTitle: {
-      fontSize: 17,
+      fontSize: 14,
       fontWeight: "600",
       fontFamily: "Inter_600SemiBold",
+      letterSpacing: 2,
+      textTransform: "uppercase",
       color: c.text,
     },
     filterBtn: { padding: 6 },

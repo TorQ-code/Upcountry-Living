@@ -57,9 +57,9 @@ function SegmentPicker<T extends string>({
                 paddingVertical: 8,
                 paddingHorizontal: 14,
                 borderRadius: 99,
-                backgroundColor: active ? colors.text : colors.card,
+                backgroundColor: active ? colors.accent : colors.card,
                 borderWidth: 1,
-                borderColor: active ? colors.text : colors.borderDk,
+                borderColor: active ? colors.accent : colors.borderDk,
               }}
             >
               <Text
@@ -424,8 +424,8 @@ const styles = (c: ReturnType<typeof useColors>) =>
       alignItems: "center",
       justifyContent: "center",
       borderBottomWidth: 1,
-      borderBottomColor: c.border,
-      backgroundColor: c.card,
+      borderBottomColor: c.borderDk,
+      backgroundColor: c.headerBg,
     },
     headerTitle: {
       fontFamily: "Inter_600SemiBold",
@@ -493,7 +493,8 @@ const styles = (c: ReturnType<typeof useColors>) =>
       fontSize: 10,
       textTransform: "uppercase",
       letterSpacing: 1,
-      fontFamily: "Inter_500Medium",
+      fontFamily: "Inter_600SemiBold",
+      color: c.accent,
       marginBottom: 10,
       paddingBottom: 8,
       borderBottomWidth: 1,

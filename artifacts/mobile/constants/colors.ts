@@ -1,40 +1,44 @@
 const colors = {
   light: {
-    text: "#1a1a1a",
-    tint: "#735D4D",
+    text: "#1c1410",
 
-    background: "#fafaf9",
-    foreground: "#1a1a1a",
+    background: "#f5efe6",
+    foreground: "#1c1410",
 
-    card: "#ffffff",
-    cardForeground: "#1a1a1a",
+    card: "#fdf7ef",
+    cardForeground: "#1c1410",
 
-    surface: "#f4f3f1",
+    surface: "#ede4d8",
 
     primary: "#735D4D",
     primaryForeground: "#ffffff",
 
-    secondary: "#f4f3f1",
-    secondaryForeground: "#3d3d3d",
+    secondary: "#ede4d8",
+    secondaryForeground: "#3d2e22",
 
-    muted: "#f4f3f1",
-    mutedForeground: "#888580",
+    muted: "#ede4d8",
+    mutedForeground: "#7a6a58",
 
     accent: "#735D4D",
     accentForeground: "#ffffff",
-    accentBg: "rgba(115, 93, 77, 0.09)",
+    accentBg: "rgba(115, 93, 77, 0.11)",
+    accentLight: "#8a7060",
 
     destructive: "#8b3a3a",
     destructiveForeground: "#ffffff",
 
-    border: "#e8e6e2",
-    borderDk: "#d0cdc8",
-    input: "#e8e6e2",
+    border: "#d9cfc0",
+    borderDk: "#c0af9c",
+    input: "#d9cfc0",
 
-    green: "#4a6741",
-    greenBg: "#eef2ed",
+    green: "#3e5e35",
+    greenBg: "#ddecd4",
 
-    mid: "#3d3d3d",
+    mid: "#3d2e22",
+
+    headerBg: "#ede6da",
+
+    tint: "#735D4D",
   },
 
   radius: 4,
