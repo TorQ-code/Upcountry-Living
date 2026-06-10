@@ -45,37 +45,35 @@ function SegmentPicker<T extends string>({
   colors: ReturnType<typeof useColors>;
 }) {
   return (
-    <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 0 }}>
-      <View style={{ flexDirection: "row", gap: 6 }}>
-        {options.map((opt) => {
-          const active = opt === value;
-          return (
-            <TouchableOpacity
-              key={opt}
-              onPress={() => onChange(opt)}
+    <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6 }}>
+      {options.map((opt) => {
+        const active = opt === value;
+        return (
+          <TouchableOpacity
+            key={opt}
+            onPress={() => onChange(opt)}
+            style={{
+              paddingVertical: 7,
+              paddingHorizontal: 13,
+              borderRadius: 99,
+              backgroundColor: active ? colors.accent : colors.card,
+              borderWidth: 1,
+              borderColor: active ? colors.accent : colors.borderDk,
+            }}
+          >
+            <Text
               style={{
-                paddingVertical: 8,
-                paddingHorizontal: 14,
-                borderRadius: 99,
-                backgroundColor: active ? colors.accent : colors.card,
-                borderWidth: 1,
-                borderColor: active ? colors.accent : colors.borderDk,
+                fontSize: 13,
+                color: active ? "#fff" : colors.mid,
+                fontFamily: "Inter_500Medium",
               }}
             >
-              <Text
-                style={{
-                  fontSize: 13,
-                  color: active ? "#fff" : colors.mid,
-                  fontFamily: "Inter_500Medium",
-                }}
-              >
-                {opt}
-              </Text>
-            </TouchableOpacity>
-          );
-        })}
-      </View>
-    </ScrollView>
+              {opt}
+            </Text>
+          </TouchableOpacity>
+        );
+      })}
+    </View>
   );
 }
 
