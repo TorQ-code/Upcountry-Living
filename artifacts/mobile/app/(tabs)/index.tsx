@@ -46,37 +46,35 @@ function SegmentPicker<T extends string>({
   colors: ReturnType<typeof useColors>;
 }) {
   return (
-    <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 0 }}>
-      <View style={{ flexDirection: "row", gap: 6 }}>
-        {options.map((opt) => {
-          const active = opt === value;
-          return (
-            <TouchableOpacity
-              key={opt}
-              onPress={() => onChange(opt)}
+    <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6 }}>
+      {options.map((opt) => {
+        const active = opt === value;
+        return (
+          <TouchableOpacity
+            key={opt}
+            onPress={() => onChange(opt)}
+            style={{
+              paddingVertical: 7,
+              paddingHorizontal: 13,
+              borderRadius: 99,
+              backgroundColor: active ? colors.accent : colors.card,
+              borderWidth: 1,
+              borderColor: active ? colors.accent : colors.borderDk,
+            }}
+          >
+            <Text
               style={{
-                paddingVertical: 8,
-                paddingHorizontal: 14,
-                borderRadius: 99,
-                backgroundColor: active ? colors.text : colors.card,
-                borderWidth: 1,
-                borderColor: active ? colors.text : colors.borderDk,
+                fontSize: 13,
+                color: active ? "#fff" : colors.mid,
+                fontFamily: "Inter_500Medium",
               }}
             >
-              <Text
-                style={{
-                  fontSize: 13,
-                  color: active ? "#fff" : colors.mid,
-                  fontFamily: "Inter_500Medium",
-                }}
-              >
-                {opt}
-              </Text>
-            </TouchableOpacity>
-          );
-        })}
-      </View>
-    </ScrollView>
+              {opt}
+            </Text>
+          </TouchableOpacity>
+        );
+      })}
+    </View>
   );
 }
 
@@ -260,7 +258,7 @@ export default function CaptureScreen() {
 
   const s = styles(colors);
   const topPad = Platform.OS === "web" ? 67 : insets.top;
-  const bottomPad = Platform.OS === "web" ? 34 : 0;
+  const bottomPad = Platform.OS === "web" ? 100 : insets.bottom + 100;
 
   return (
     <View style={[s.container, { paddingTop: topPad }]}>
@@ -385,7 +383,7 @@ export default function CaptureScreen() {
             <Text style={[s.cardLabel, { color: colors.mutedForeground }]}>Comp Research</Text>
             <View style={s.compRow}>
               <TextInput
-                style={[s.input, { flex: 1 }]}
+                style={[s.input, { flex: 1, minWidth: 0 }]}
                 value={compQ}
                 onChangeText={setCompQ}
                 placeholder="Search eBay comps…"
@@ -531,8 +529,8 @@ const styles = (c: ReturnType<typeof useColors>) =>
       alignItems: "center",
       justifyContent: "center",
       borderBottomWidth: 1,
-      borderBottomColor: c.border,
-      backgroundColor: c.card,
+      borderBottomColor: c.borderDk,
+      backgroundColor: c.headerBg,
     },
     headerTitle: {
       fontFamily: "Inter_600SemiBold",
@@ -600,7 +598,8 @@ const styles = (c: ReturnType<typeof useColors>) =>
       fontSize: 10,
       textTransform: "uppercase",
       letterSpacing: 1,
-      fontFamily: "Inter_500Medium",
+      fontFamily: "Inter_600SemiBold",
+      color: c.accent,
       marginBottom: 10,
       paddingBottom: 8,
       borderBottomWidth: 1,
@@ -636,7 +635,7 @@ const styles = (c: ReturnType<typeof useColors>) =>
     compRow: {
       flexDirection: "row",
       gap: 8,
-      alignItems: "center",
+      alignItems: "stretch",
     },
     compResults: {
       marginTop: 10,
@@ -675,11 +674,14 @@ const styles = (c: ReturnType<typeof useColors>) =>
       fontFamily: "Inter_400Regular",
     },
     btnOutline: {
+      flexShrink: 0,
       borderWidth: 1,
       borderColor: c.borderDk,
       borderRadius: 4,
       paddingVertical: 12,
-      paddingHorizontal: 16,
+      paddingHorizontal: 14,
+      alignItems: "center",
+      justifyContent: "center",
     },
     btnOutlineText: {
       fontSize: 13,

@@ -69,7 +69,7 @@ export default function PricingScreen() {
 
       <ScrollView
         style={s.scroll}
-        contentContainerStyle={[s.content, { paddingBottom: Platform.OS === "web" ? 34 : insets.bottom + 90 }]}
+        contentContainerStyle={[s.content, { paddingBottom: Platform.OS === "web" ? 100 : insets.bottom + 100 }]}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
@@ -171,13 +171,15 @@ const styles = (c: ReturnType<typeof useColors>) =>
       alignItems: "center",
       justifyContent: "center",
       borderBottomWidth: 1,
-      borderBottomColor: c.border,
-      backgroundColor: c.card,
+      borderBottomColor: c.borderDk,
+      backgroundColor: c.headerBg,
     },
     headerTitle: {
-      fontSize: 17,
+      fontSize: 14,
       fontWeight: "600",
       fontFamily: "Inter_600SemiBold",
+      letterSpacing: 2,
+      textTransform: "uppercase",
       color: c.text,
     },
     scroll: { flex: 1 },
@@ -194,9 +196,10 @@ const styles = (c: ReturnType<typeof useColors>) =>
       borderRadius: 4,
       padding: 14,
     },
-    searchRow: { flexDirection: "row", gap: 8, marginBottom: 16 },
+    searchRow: { flexDirection: "row", gap: 8, marginBottom: 16, alignItems: "center" },
     searchInput: {
       flex: 1,
+      minWidth: 0,
       borderWidth: 1,
       borderColor: c.borderDk,
       borderRadius: 4,
@@ -209,11 +212,12 @@ const styles = (c: ReturnType<typeof useColors>) =>
     searchBtn: {
       flexDirection: "row",
       alignItems: "center",
-      backgroundColor: c.text,
+      flexShrink: 0,
+      backgroundColor: c.accent,
       borderRadius: 4,
-      paddingHorizontal: 16,
+      paddingHorizontal: 14,
       paddingVertical: 12,
-      gap: 6,
+      gap: 5,
     },
     searchBtnText: {
       color: "#fff",
