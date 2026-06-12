@@ -18,7 +18,6 @@ import { useColors } from "@/hooks/useColors";
 import { compDates, getComps } from "@/constants/comps";
 
 const PLATS = ["eBay", "eBay", "Etsy", "eBay", "Facebook Mkt"];
-const DATES = compDates();
 
 interface PriceResult {
   comps: { p: number; c: string }[];
@@ -31,6 +30,7 @@ export default function PricingScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
   const router = useRouter();
+  const DATES = compDates();
   const [query, setQuery] = useState("");
   const [result, setResult] = useState<PriceResult | null>(null);
   const inputRef = useRef<TextInput>(null);

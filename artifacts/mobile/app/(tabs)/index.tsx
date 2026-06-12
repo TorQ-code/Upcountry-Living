@@ -32,8 +32,6 @@ import {
 import { useColors } from "@/hooks/useColors";
 import { compDates, getComps } from "@/constants/comps";
 
-const COMP_DATES = compDates();
-
 function SegmentPicker<T extends string>({
   options,
   value,
@@ -82,6 +80,7 @@ export default function CaptureScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
   const { addItem, updateItem } = useInventory();
+  const COMP_DATES = compDates();
 
   const [photo, setPhoto] = useState<string | null>(null);
   const [name, setName] = useState("");
